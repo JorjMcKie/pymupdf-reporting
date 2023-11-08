@@ -38,9 +38,11 @@ class FrontMatterReport(object):
             dev = writer.begin_page(self.mediabox)
             where = +self.where
             for sect in sections:
-                if where.is_empty:
+                if where.is_empty:  # start next page if no more space on page
                     break
                 if sect.reset:
+                    if sect.story == None:
+                        sect.make_story()
                     sect.story.reset()
                     this_more, filled = sect.story.place(where)
                     more_list.append(this_more)
@@ -131,6 +133,7 @@ class LongTable(object):
         top_row_bg=None,
         archive=None,
         css=None,
+        alternating_bg=None,
     ):
         self.mediabox = report.mediabox
         self.where = report.where
@@ -146,6 +149,7 @@ class LongTable(object):
         self.HEADER_PATHS = None
         self.header_tops = []  # list where.y0 coordinates
         self.reset = False  # this building must not be reset
+        self.alternating_bg = alternating_bg
         if self.top_row:
             if self.story != None:
                 self.extract_header()
@@ -204,14 +208,23 @@ class LongTable(object):
             rows = rows[1:]
         else:
             rows = []
-        for data in rows:
+        for j, data in enumerate(rows):
             row = templ.clone()  # clone model row
+            if self.alternating_bg != None and len(self.alternating_bg) >= 2:
+                bg_color = self.alternating_bg[j % 2]
+            else:
+                bg_color = None
             for i in range(len(data)):
                 text = str(data[i]).replace("\\n", "\n").replace("<br>", "\n")
                 tag = row.find(None, "id", fields[i])
                 if tag == None:
                     raise ValueError(f"id '{fields[i]}' not in template row.")
-                _ = tag.add_text(text)
+                if bg_color:
+                    tag.set_properties(bgcolor=bg_color)
+                if text.startswith("|img|"):
+                    _ = tag.add_image(text[5:])
+                else:
+                    _ = tag.add_text(text)
             table.append_child(row)
             # print("row appended")
 
@@ -221,7 +234,8 @@ class LongTable(object):
             self.extract_header()
 
     def repeat_header(self, page, rect):
-        page.draw_rect(rect, color=None, fill=self.top_row_bg, overlay=False)
+        if self.top_row_bg:
+            page.draw_rect(rect, color=None, fill=self.top_row_bg, overlay=False)
         mat = self.HEADER_RECT.torect(rect)
 
         for p in self.HEADER_PATHS:
