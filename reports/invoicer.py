@@ -102,15 +102,9 @@ def fetch_rows():
 
     # append the totals row
     rows.append(total_row)
-    return rows
 
-
-# Read the HTML source code for the items table
-items_html = pathlib.Path("items.html").read_bytes().decode()
-
-items = LongTable(  # generate a table object that can cross page boundaries
-    html=items_html,  # HTML source
-    columns=[  # 'id' items in the HTML source
+    # prepend a row with the HTML field id's:
+    fields = [  # 'id' items in the HTML source
         "line",
         "hp-id",
         "desc",
@@ -120,7 +114,16 @@ items = LongTable(  # generate a table object that can cross page boundaries
         "date",
         "uprice",
         "tprice",
-    ],
+    ]
+    rows.insert(0, fields)
+    return rows
+
+
+# Read the HTML source code for the items table
+items_html = pathlib.Path("items.html").read_bytes().decode()
+
+items = LongTable(  # generate a table object that can cross page boundaries
+    html=items_html,  # HTML source
     fetch_rows=fetch_rows,  # callback to fetch invoice items
     top_row="header",  # identifies the table's top row
     top_row_bg="#aaceeb",  # top row background color
