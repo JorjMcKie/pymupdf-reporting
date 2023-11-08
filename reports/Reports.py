@@ -211,7 +211,7 @@ class LongTable(object):
         for j, data in enumerate(rows):
             row = templ.clone()  # clone model row
             if self.alternating_bg != None and len(self.alternating_bg) >= 2:
-                bg_color = self.alternating_bg[j % 2]
+                bg_color = self.alternating_bg[j % len(self.alternating_bg)]
             else:
                 bg_color = None
             for i in range(len(data)):
