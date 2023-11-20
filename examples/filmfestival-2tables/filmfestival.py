@@ -3,9 +3,12 @@ import sqlite3
 import fitz
 from fitz.reports import Report, Block, Table
 
+# -----------------------------------------------------------------------------
 # HTML sources
+# -----------------------------------------------------------------------------
 HEADER = """<h1 style="text-align:center">Hook Norton Film Festival</h1>"""
 
+# HTML for movies
 FILM_HTML = """
 <style>
 table {border-spacing: 0;}
@@ -29,15 +32,16 @@ td {padding-left: 3px;padding-right: 3px;}
 </table>
 """
 
+# HTML for actors
 ACTOR_HTML = """
 <style>
 table {border-spacing: 0;}
-td,th {border: .2px solid #bbb;}
+td,th {border: .2px solid #ccc;}
 td {padding-left: 3px;padding-right: 3px;}
 </style>
 <h2>Actors and their Films</h2>
 <table>
-    <tr id="toprow" style="background-color: #ccc">
+    <tr id="toprow" style="background-color: #ffff00">
         <th>Actor</th>
         <th>Film Titles</th>
     </tr>
@@ -54,6 +58,7 @@ header = Block(html=HEADER, report=report)
 
 
 def get_film_items():
+    """Return the table rows for films."""
     dbfilename = "filmfestival.db"  # the SQLITE database file name
     database = sqlite3.connect(dbfilename)  # open database
     cursor_films = database.cursor()  # cursor for selecting the films
@@ -67,7 +72,7 @@ def get_film_items():
 
     cursor_films.execute(select_films)  # execute cursor, and ...
     films = cursor_films.fetchall()  # read out what was found
-    rows = []
+    rows = [["film", "director", "year", "actors"]]
     for film_row in films:
         film_row = list(film_row)
         title = film_row[0]
@@ -79,25 +84,23 @@ def get_film_items():
         film_row.append(actors)
         rows.append(film_row)
 
-    toprow = ["film", "director", "year", "actors"]
-    rows.insert(0, toprow)
     return rows
 
 
 def get_actor_items():
     dbfilename = "filmfestival.db"  # the SQLITE database file name
     database = sqlite3.connect(dbfilename)  # open database
-    cursor_films = database.cursor()  # cursor for selecting films
-    cursor_casts = database.cursor()  # cursor for selecting actors
 
-    # select statement for the films
+    # SQL for the films
+    cursor_films = database.cursor()  # cursor for selecting films
     select_films = """SELECT year FROM films where title = "%s" """
 
-    # select stament for the actors
+    # SQL for the actors
+    cursor_casts = database.cursor()  # cursor for selecting actors
     select_casts = """SELECT name, film FROM actors ORDER BY name, film"""
 
     cursor_casts.execute(select_casts)  # execute cursor, and ...
-    actor_rows = cursor_casts.fetchall()  # read all actors/films
+    actor_rows = cursor_casts.fetchall()  # read all actor, film rows
     rows = [["actor", "films"]]
     actor_info = {}
     for actor_row in actor_rows:
@@ -105,10 +108,10 @@ def get_actor_items():
         films = actor_info.get(actor, [])
         cursor_films.execute(select_films % film)
         year_info = cursor_films.fetchall()
-        if year_info:
+        if year_info:  # film found - extract the year
             year = year_info[0][0]
         else:
-            year = "????"
+            year = "????"  # else indicate mismatch
         films.append(f"{film} ({year})")
         actor_info[actor] = films
     for actor, films in actor_info.items():
@@ -128,7 +131,6 @@ actor_items = Table(
     report=report,
     html=ACTOR_HTML,
     fetch_rows=get_actor_items,
-    alternating_bg=["#fff", "#fff"],
     top_row="toprow",
 )
 
