@@ -105,6 +105,7 @@ class FrontMatterReport(object):
                 rect.y1 = rect.y0 + details.HEADER_RECT.height
                 page.draw_rect(rect, color=None, fill=fill, overlay=False)
 
+        doc.subset_fonts()
         doc.ez_save(filename)
 
 
@@ -131,6 +132,7 @@ class LongTable(object):
         fetch_rows=None,
         top_row=None,
         top_row_bg=None,
+        last_row_bg=None,
         archive=None,
         css=None,
         alternating_bg=None,
@@ -150,6 +152,7 @@ class LongTable(object):
         self.header_tops = []  # list where.y0 coordinates
         self.reset = False  # this building must not be reset
         self.alternating_bg = alternating_bg
+        self.last_row_bg = last_row_bg
         if self.top_row:
             if self.story != None:
                 self.extract_header()
@@ -212,21 +215,19 @@ class LongTable(object):
             row = templ.clone()  # clone model row
             if self.alternating_bg != None and len(self.alternating_bg) >= 2:
                 bg_color = self.alternating_bg[j % len(self.alternating_bg)]
-            else:
-                bg_color = None
+                row.set_properties(bgcolor=bg_color)
+            if self.last_row_bg and j == len(rows) - 1:
+                row.set_properties(bgcolor=self.last_row_bg)
             for i in range(len(data)):
                 text = str(data[i]).replace("\\n", "\n").replace("<br>", "\n")
                 tag = row.find(None, "id", fields[i])
                 if tag == None:
                     raise ValueError(f"id '{fields[i]}' not in template row.")
-                if bg_color:
-                    tag.set_properties(bgcolor=bg_color)
                 if text.startswith("|img|"):
                     _ = tag.add_image(text[5:])
                 else:
                     _ = tag.add_text(text)
             table.append_child(row)
-            # print("row appended")
 
         if templ:
             templ.remove()

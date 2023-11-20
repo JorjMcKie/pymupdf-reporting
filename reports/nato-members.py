@@ -90,7 +90,8 @@ items = LongTable(
     top_row_bg="#ffff00",
     fetch_rows=fetch_rows,
     archive=national_flags,
-    alternating_bg=("#ccc", "#aaa", "#fff"),
+    alternating_bg=("#aaa", "#ccc", "#eee"),
+    last_row_bg="#0000ff",
 )
 
 report.pages = report.page0 = [header, items]
