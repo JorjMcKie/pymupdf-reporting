@@ -1,7 +1,7 @@
 import sqlite3
 
 import fitz
-from Reports import Report, Block, Table
+from fitz.reports import Report, Block, Table
 
 # HTML sources
 HEADER = """<h1 style="text-align:center">Hook Norton Film Festival</h1>"""
