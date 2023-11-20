@@ -54,7 +54,7 @@ header = Block(html=HEADER, report=report)
 
 
 def get_film_items():
-    dbfilename = __file__.replace(".py", ".db")  # the SQLITE database file name
+    dbfilename = "filmfestival.db"  # the SQLITE database file name
     database = sqlite3.connect(dbfilename)  # open database
     cursor_films = database.cursor()  # cursor for selecting the films
     cursor_casts = database.cursor()  # cursor for selecting actors per film
@@ -85,7 +85,7 @@ def get_film_items():
 
 
 def get_actor_items():
-    dbfilename = __file__.replace(".py", ".db")  # the SQLITE database file name
+    dbfilename = "filmfestival.db"  # the SQLITE database file name
     database = sqlite3.connect(dbfilename)  # open database
     cursor_films = database.cursor()  # cursor for selecting films
     cursor_casts = database.cursor()  # cursor for selecting actors
@@ -134,4 +134,4 @@ actor_items = Table(
 
 report.sections = [film_items, actor_items]
 report.header = [header]
-report.run("filmfestival2.pdf")
+report.run("output.pdf")
