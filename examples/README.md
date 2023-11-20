@@ -5,4 +5,5 @@ Every example should be in its own folder - together with everything its needs l
 * HTML and CSS sources
 * database(s)
 * script
-* REDADME.md file that briefly explains 
+* output report
+* REDADME.md file that briefly explains what the script does.
