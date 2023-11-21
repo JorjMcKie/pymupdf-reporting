@@ -43,7 +43,7 @@ td {padding-left: 3px;padding-right: 3px;}
 <table>
     <tr id="toprow" style="background-color: #ffff00">
         <th>Actor</th>
-        <th>Film Titles</th>
+        <th>Movie Participation</th>
     </tr>
     <tr id="template" style="margin-top: 2px;">
         <td id="actor"></td>
@@ -61,21 +61,24 @@ def get_film_items():
     """Return the table rows for films."""
     dbfilename = "filmfestival.db"  # the SQLITE database file name
     database = sqlite3.connect(dbfilename)  # open database
-    cursor_films = database.cursor()  # cursor for selecting the films
-    cursor_casts = database.cursor()  # cursor for selecting actors per film
 
-    # select statement for the films - let SQL also sort it for us
+    # SQL for the films
+    cursor_films = database.cursor()  # cursor for selecting the films
     select_films = """SELECT title, director, year FROM films ORDER BY title"""
 
-    # select stament for actors, a skeleton: sub-select by film title
+    # SQL for the actors
+    cursor_casts = database.cursor()  # cursor for selecting actors per film
     select_casts = """SELECT name FROM actors WHERE film = "%s" ORDER BY name"""
 
     cursor_films.execute(select_films)  # execute cursor, and ...
     films = cursor_films.fetchall()  # read out what was found
+
+    # we will return this list:
     rows = [["film", "director", "year", "actors"]]
+
     for film_row in films:
         film_row = list(film_row)
-        title = film_row[0]
+        title = film_row[0]  # take film title for actor seletion
         cursor_casts.execute(select_casts % title)  # execute cursor
         casts = cursor_casts.fetchall()  # read actors for the film
         # each actor name appears in its own tuple, so extract it from there
@@ -111,7 +114,7 @@ def get_actor_items():
         if year_info:  # film found - extract the year
             year = year_info[0][0]
         else:
-            year = "????"  # else indicate mismatch
+            year = "????"  # else indicate missing data
         films.append(f"{film} ({year})")
         actor_info[actor] = films
     for actor, films in actor_info.items():
