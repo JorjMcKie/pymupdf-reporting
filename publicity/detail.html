@@ -1,0 +1,64 @@
+<style>
+    body {
+        font-family: sans-serif;
+        font-size: 10;
+    }
+
+    table {
+        border-spacing: 0;
+    }
+
+    td,
+    th {
+        padding-left: 3 px;
+        padding-right: 3 px;
+        border: .2 px solid #bbb;
+    }
+
+    td[id="line"],
+    td[id="uprice"],
+    td[id="qty"] {
+        padding-left: 3;
+        padding-right: 10;
+    }
+
+    td[id="uprice"],
+    td[id="tprice"] {
+        text-align: right;
+    }
+
+    td[id="line"],
+    td[id="uom"],
+    td[id="qty"],
+    td[id="part"],
+    td[id="date"] {
+        text-align: center;
+    }
+</style>
+
+<body>
+    <table style="margin-left: 5%;">
+        <tr id="toprow" style="background-color: #aaceeb;">
+            <th>No.</th>
+            <th>Internal ID</th>
+            <th>Description</th>
+            <th>Part No.</th>
+            <th>Quantity</th>
+            <th>Packaging</th>
+            <th>Date</th>
+            <th>Unit Price</th>
+            <th>Total Price</th>
+        </tr>
+        <tr id="template">
+            <td id="line"></td>
+            <td id="hp-id"></td>
+            <td id="desc"></td>
+            <td id="part"></td>
+            <td id="qty"></td>
+            <td id="uom"></td>
+            <td id="date"></td>
+            <td id="uprice"></td>
+            <td id="tprice"></td>
+        </tr>
+    </table>
+</body>
