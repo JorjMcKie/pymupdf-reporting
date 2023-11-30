@@ -1,7 +1,10 @@
 import sqlite3
 
 import fitz
-from fitz.reports import Report, Block, Table
+
+# from fitz.reports import Report, Block, Table
+# until official release as part of PymuPDF use this import statement instead:
+from Reports import Report, Block, Table
 
 # -----------------------------------------------------------------------------
 # HTML sources
@@ -52,7 +55,7 @@ td {padding-left: 3px;padding-right: 3px;}
 </table>
 """
 
-mediabox = fitz.paper_rect("a4")
+mediabox = fitz.paper_rect("A4")
 report = Report(mediabox, font_families={"sans-serif": "ubuntu", "serif": "ubuntu"})
 header = Block(html=HEADER, report=report)
 
@@ -137,6 +140,9 @@ actor_items = Table(
     top_row="toprow",
 )
 
-report.sections = [film_items, actor_items]
 report.header = [header]
+report.sections = [
+    [film_items, {"cols": 1, "format": "a3", "newpage": True}],
+    [actor_items, {"cols": 1, "format": "a3", "newpage": False}],
+]
 report.run("output.pdf")
